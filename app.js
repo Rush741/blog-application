@@ -23,6 +23,11 @@ app.get("/create", (req, res) => {
 });
 
 app.post("/create", (req, res) => {
+    const {title, content} = req.body;
+
+    if(!title.trim() || !content.trim()) {
+        return res.status(400).send("Title and content cannot be empty.")
+    }
     const post = {
         id: postId++,
         title: req.body.title,
@@ -30,6 +35,21 @@ app.post("/create", (req, res) => {
     };
     posts.push(post);
     res.redirect("/");
+});
+
+app.get("/posts/:id", (req, res) => {
+    const postId = Number(req.params.id);
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+        res.render("post.ejs", {
+            post: post,
+        });
+    }
+    else {
+        res.status(404).render("404.ejs", {
+            message: "Post not found!",
+        })
+    }
 });
 
 app.listen(port, ()=> {
