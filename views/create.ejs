@@ -1,0 +1,17 @@
+<%- include('partials/header.ejs') %>
+<hr>
+
+<h2>Publish a new blog📃</h2>
+<form action="/create" method="post" >
+    <label for="title">Title: </label><br>
+    <input type="text" id="title" placeholder="Post Title" name="title"><br><br>
+    <label for="content">Content: </label><br>
+    <textarea type="text" rows="10" id="content" placeholder="Post Content" name="content"></textarea><br><br>
+    <button type="submit" >Publish</button>
+</form>
+
+
+
+
+<hr>
+<%- include('partials/footer.ejs') %>
