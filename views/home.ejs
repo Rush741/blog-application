@@ -9,6 +9,7 @@
             <h2><%= post.title %></h2>
             <p><%= post.content.substring(0, 100) %>...</p>
             <a href="/posts/<%=post.id%>">Read More</a>
+            <a href="/edit/<%=post.id%>">Edit</a>
         </div>
         <hr>
     <% });  %>

@@ -52,6 +52,32 @@ app.get("/posts/:id", (req, res) => {
     }
 });
 
+app.get("/edit/:id", (req, res) => {
+    const postId = Number(req.params.id);
+    const post = posts.find(p => p.id === postId);
+    if(post) {
+        res.render("edit.ejs", {
+            post: post,
+        });
+    }
+    else {
+        res.status(404).render("404.ejs", {
+            message: "Post not found!",
+        })
+    }
+});
+
+app.post("/edit/:id", (req, res) => {
+    const postId = Number(req.params.id);
+    const index = posts.findIndex(p => p.id === postId);
+    if(index !== -1) {
+        posts[index].title = req.body.title;
+        posts[index].content = req.body.content;
+    }
+    res.redirect("/");
+})
+
+
 app.listen(port, ()=> {
     console.log(`Server running on port ${port}...`);
 });
