@@ -75,8 +75,12 @@ app.post("/edit/:id", (req, res) => {
         posts[index].content = req.body.content;
     }
     res.redirect("/");
-})
+});
 
+app.post("/delete/:id", (req, res) => {
+    posts = posts.filter(p => p.id !== Number(req.params.id));
+    res.redirect("/");
+});
 
 app.listen(port, ()=> {
     console.log(`Server running on port ${port}...`);
