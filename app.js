@@ -17,13 +17,13 @@ db.connect();
 
 //middlewares
 app.use(express.static("public"));
-app.use(express.urlencoded({ extended: true}));
+app.use(bodyParser.urlencoded({ extended: true}));
 
 
 //client requests
 app.get("/", async (req, res) => {
     try {
-        const result = await db.query("SELECT * FROM blogs ORDER BY updated_at DESC;");
+        const result = await db.query("SELECT * FROM blogs ORDER BY created_at DESC;");
         let posts = result.rows;
         res.render("home.ejs", {
             posts: posts,
@@ -32,6 +32,14 @@ app.get("/", async (req, res) => {
         console.error(err);
         res.send("Error fetching posts");
     }
+});
+
+app.get("/login", (req, res) => {
+    res.render("login.ejs");
+});
+
+app.get("/register", (req, res) => {
+    res.render("register.ejs");
 });
 
 app.get("/create", (req, res) => {
@@ -46,7 +54,7 @@ app.post("/create", async (req, res) => {
         if(!title.trim() || !content.trim()) {
             return res.status(400).send("Title and content cannot be empty.")
         }
-        await db.query("INSERT INTO blogs(title, content) VALUES ($1, $2);", [title, content]);
+        await db.query("INSERT INTO blogs(title, content, author_id) VALUES ($1, $2, 1);", [title, content]);// TEMPORARY FIX BY SAYING AUTHOR_ID AS 1 FOR EVERY BLOG
         res.redirect("/");
     } catch (err) {
         console.error(err);
