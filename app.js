@@ -1,9 +1,13 @@
 import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
+import bcrypt from "bcryptjs";
+import passport from "passport";
+import { Strategy } from "passport-local";
 import "dotenv/config";
 
 const port = 3000;
+const saltRounds = 10;
 const app = express();
 
 const db = new pg.Client({
@@ -41,6 +45,34 @@ app.get("/login", (req, res) => {
 app.get("/register", (req, res) => {
     res.render("register.ejs");
 });
+
+app.post("/register", async (req, res) => {
+    console.log(req.body);
+    try {
+        const checkUsername = await db.query("SELECT * FROM users WHERE username=$1", [req.body.username]);
+        const checkEmail = await db.query("SELECT * FROM users WHERE email=$1", [req.body.email]);
+        if(checkUsername.rows.length > 0 || checkEmail.rows.length > 0) {
+            console.log("Needed unique username and email");
+            res.redirect("/register");
+        } else {
+            bcrypt.hash(req.body.password, saltRounds, async(err, hash) => {
+                if(err) {
+                    console.log(err);
+                } else {
+                    const result = await db.query("INSERT INTO users(username, email, password_hash, is_verified) VALUES($1, $2, $3, true) RETURNING *;", [req.body.username, req.body.email, hash])
+                    const user = result.rows[0];
+                    // req.login(user, (err)=> {
+                    //     console.log("logged in successfully");
+                    //     res.redirect("/");
+                    // })
+                }
+            })
+        }
+
+    } catch(err) {
+        console.log(err);
+    }
+})
 
 app.get("/create", (req, res) => {
     res.render("create.ejs");
